@@ -1,7 +1,8 @@
 /*
 Projeto de Sistemas Mecatrônicos
 Alunos: Jorge Palma
-
+        Vinicius Santos
+        Valmir
 */
 
 #include <PID_v1.h>
@@ -115,6 +116,10 @@ void setup()
 
 void loop()
 {
+  input_mot_2 = analogRead(POT_1_MOT_2);
+  PID_Mot_2_up.Compute();
+  PID_Mot_2_down.Compute();
+
   input_mot_3 = analogRead(POT_2_MOT_3);
   PID_Mot_3_up.Compute();
   PID_Mot_3_down.Compute();
@@ -123,25 +128,57 @@ void loop()
   PID_Mot_4_up.Compute();
   PID_Mot_4_down.Compute();
 
+  input_mot_5 = analogRead(POT_4_MOT_5);
+  PID_Mot_5_left.Compute();
+  PID_Mot_5_right.Compute();
+
+  if (input_mot_2 > MOTOR_2_MIN && input_mot_2 < MOTOR_2_MAX)
+  {
+    if (input_mot_2 < set_point_mot_2)
+    {
+    //  Serial.print("if2  input:   ");
+    //  Serial.print(input_mot_2);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_2_up);
+      analogWrite(DRIVER_1_IN_4, output_mot_2_up);
+      analogWrite(DRIVER_1_IN_3, 0);
+    }
+    else if (input_mot_2 > set_point_mot_2)
+    {
+    //  Serial.print("else2  input:   ");
+    //  Serial.print(input_mot_2);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_2_down);
+      analogWrite(DRIVER_1_IN_4, 0);
+      analogWrite(DRIVER_1_IN_3, output_mot_2_down);
+    }
+  }
+  else
+  {
+    digitalWrite(DRIVER_2_IN_1, LOW);
+    digitalWrite(DRIVER_2_IN_2, LOW);
+  }
+
+
   if (input_mot_3 > MOTOR_3_MIN && input_mot_3 < MOTOR_3_MAX)
   {
     if (input_mot_3 < set_point_mot_3)
     {
-     Serial.print("if3  input:   ");
-     Serial.print(input_mot_3);
-     Serial.print("   ||  output:   ");
-     Serial.println(output_mot_3_up);
-      analogWrite(DRIVER_2_IN_1, output_mot_3_up);
-      analogWrite(DRIVER_2_IN_2, 0);
+    //  Serial.print("if3  input:   ");
+    //  Serial.print(input_mot_3);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_3_up);
+      analogWrite(DRIVER_2_IN_2, output_mot_3_up);
+      analogWrite(DRIVER_2_IN_1, 0);
     }
     else if (input_mot_3 > set_point_mot_3)
     {
-     Serial.print("else3  input:   ");
-     Serial.print(input_mot_3);
-     Serial.print("   ||  output:   ");
-     Serial.println(output_mot_3_down);
-      analogWrite(DRIVER_2_IN_1, 0);
-      analogWrite(DRIVER_2_IN_2, output_mot_3_down);
+    //  Serial.print("else3  input:   ");
+    //  Serial.print(input_mot_3);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_3_down);
+      analogWrite(DRIVER_2_IN_2, 0);
+      analogWrite(DRIVER_2_IN_1, output_mot_3_down);
     }
   }
   else
@@ -155,21 +192,21 @@ void loop()
   {
     if (input_mot_4 < set_point_mot_4)
     {
-     Serial.print("if4  input:   ");
-     Serial.print(input_mot_4);
-     Serial.print("   ||  output:   ");
-     Serial.println(output_mot_4_up);
-      analogWrite(DRIVER_2_IN_3, output_mot_4_up);
-      analogWrite(DRIVER_2_IN_4, 0);
+    //  Serial.print("if4  input:   ");
+    //  Serial.print(input_mot_4);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_4_up);
+      analogWrite(DRIVER_2_IN_4, output_mot_4_up);
+      analogWrite(DRIVER_2_IN_3, 0);
     }
     else if (input_mot_4 > set_point_mot_4)
     {
-     Serial.print("else4  input:   ");
-     Serial.print(input_mot_4);
-     Serial.print("   ||  output:   ");
-     Serial.println(output_mot_4_down);
-      analogWrite(DRIVER_2_IN_3, 0);
-      analogWrite(DRIVER_2_IN_4, output_mot_4_down);
+    //  Serial.print("else4  input:   ");
+    //  Serial.print(input_mot_4);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_4_down);
+      analogWrite(DRIVER_2_IN_4, 0);
+      analogWrite(DRIVER_2_IN_3, output_mot_4_down);
     }
   }
   else
@@ -177,6 +214,34 @@ void loop()
     digitalWrite(DRIVER_2_IN_3, LOW);
     digitalWrite(DRIVER_2_IN_4, LOW);
   }
+
+  if (input_mot_5 > MOTOR_5_MIN && input_mot_5 < MOTOR_5_MAX)
+  {
+    if (input_mot_5 < set_point_mot_5)
+    {
+    //  Serial.print("if5  input:   ");
+    //  Serial.print(input_mot_5);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_5_left);
+      analogWrite(DRIVER_3_IN_2, output_mot_5_left);
+      analogWrite(DRIVER_3_IN_1, 0);
+    }
+    else if (input_mot_5 > set_point_mot_5)
+    {
+    //  Serial.print("else5  input:   ");
+    //  Serial.print(input_mot_5);
+    //  Serial.print("   ||  output:   ");
+    //  Serial.println(output_mot_5_right);
+      analogWrite(DRIVER_3_IN_2, 0);
+      analogWrite(DRIVER_3_IN_1, output_mot_5_right);
+    }
+  }
+  else
+  {
+    digitalWrite(DRIVER_3_IN_2, LOW);
+    digitalWrite(DRIVER_3_IN_1, LOW);
+  }
+
 
   delay(10); // Para facilitar a leitura do serial
 }
