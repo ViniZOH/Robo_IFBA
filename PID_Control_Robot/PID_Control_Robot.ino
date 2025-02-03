@@ -29,8 +29,8 @@ Alunos: Jorge Palma
 
 #define MOTOR_1_MAX 1023//837  // Definir se esse máximo indica subida, descida, direita, esquerda
 #define MOTOR_1_MIN 0//125
-#define MOTOR_2_MAX 1023//905
-#define MOTOR_2_MIN 0
+#define MOTOR_2_MAX 900//905
+#define MOTOR_2_MIN 100
 #define MOTOR_3_MAX 956
 #define MOTOR_3_MIN 124
 #define MOTOR_4_MAX 649
@@ -105,15 +105,39 @@ void setup()
   PID_Mot_5_right.SetOutputLimits(0, 255);
 
   // Definir o setpoint inicial
-  // set_point_mot_1 = 430; // Defina o valor desejado
+  set_point_mot_1 = 512; // Defina o valor desejado
   set_point_mot_2 = 512; // Defina o valor desejado
   set_point_mot_3 = 512; // Defina o valor desejado
-  set_point_mot_4 = 420; // Defina o valor desejado
-  set_point_mot_5 = 250; // Defina o valor desejado
+  set_point_mot_4 = 400; // Defina o valor desejado
+  set_point_mot_5 = 512; // Defina o valor desejado
 }
 
 void loop()
 {
+  if (Serial.available() > 0) {
+    String input = Serial.readStringUntil('\0'); // Lê a string até o delimitador \0
+    input.trim(); // Remove espaços extras
+
+    // Divida a string com base na vírgula e atribua aos setpoints
+    int motorValues[5];
+    int index = 0;
+    int pos = 0;
+    while ((pos = input.indexOf(',')) != -1) {
+      motorValues[index++] = input.substring(0, pos).toInt();
+      input.remove(0, pos + 1);
+    }
+    motorValues[index] = input.toInt(); // Pega o último valor
+
+    // Atribui os setpoints para cada motor de acordo com a ordem solicitada
+    set_point_mot_5 = motorValues[0];
+    set_point_mot_4 = motorValues[1];
+    set_point_mot_3 = motorValues[2];
+    set_point_mot_2 = motorValues[3];
+    set_point_mot_1 = motorValues[4];
+
+    Serial.println("Info received");
+  }
+
   input_mot_2 = analogRead(POT_1_MOT_2);
   PID_Mot_2_up.Compute();
   PID_Mot_2_down.Compute();
@@ -134,19 +158,19 @@ void loop()
   {
     if (input_mot_2 < set_point_mot_2)
     {
-     Serial.print("if2-in: ");
-     Serial.print(input_mot_2);
-     Serial.print(" || out: ");
-     Serial.print(output_mot_2_up);
+    //  Serial.print("if2-in: ");
+    //  Serial.print(input_mot_2);
+    //  Serial.print(" || out: ");
+    //  Serial.print(output_mot_2_up);
       analogWrite(DRIVER_1_IN_4, output_mot_2_up);
       analogWrite(DRIVER_1_IN_3, 0);
     }
     else if (input_mot_2 > set_point_mot_2)
     {
-     Serial.print(" else2-in: ");
-     Serial.print(input_mot_2);
-     Serial.print(" || out: ");
-     Serial.print(output_mot_2_down);
+    //  Serial.print(" else2-in: ");
+    //  Serial.print(input_mot_2);
+    //  Serial.print(" || out: ");
+    //  Serial.print(output_mot_2_down);
       analogWrite(DRIVER_1_IN_4, 0);
       analogWrite(DRIVER_1_IN_3, output_mot_2_down);
     }
@@ -162,19 +186,19 @@ void loop()
   {
     if (input_mot_3 < set_point_mot_3)
     {
-     Serial.print(" if3-in: ");
-     Serial.print(input_mot_3);
-     Serial.print(" || out: ");
-     Serial.print(output_mot_3_up);
+    //  Serial.print(" if3-in: ");
+    //  Serial.print(input_mot_3);
+    //  Serial.print(" || out: ");
+    //  Serial.print(output_mot_3_up);
       analogWrite(DRIVER_2_IN_2, output_mot_3_up);
       analogWrite(DRIVER_2_IN_1, 0);
     }
     else if (input_mot_3 > set_point_mot_3)
     {
-     Serial.print(" else3-in: ");
-     Serial.print(input_mot_3);
-     Serial.print(" || out: ");
-     Serial.print(output_mot_3_down);
+    //  Serial.print(" else3-in: ");
+    //  Serial.print(input_mot_3);
+    //  Serial.print(" || out: ");
+    //  Serial.print(output_mot_3_down);
       analogWrite(DRIVER_2_IN_2, 0);
       analogWrite(DRIVER_2_IN_1, output_mot_3_down);
     }
@@ -190,19 +214,19 @@ void loop()
   {
     if (input_mot_4 < set_point_mot_4)
     {
-     Serial.print(" if4-in: ");
-     Serial.print(input_mot_4);
-     Serial.print(" || out: ");
-     Serial.print(output_mot_4_up);
+    //  Serial.print(" if4-in: ");
+    //  Serial.print(input_mot_4);
+    //  Serial.print(" || out: ");
+    //  Serial.print(output_mot_4_up);
       analogWrite(DRIVER_2_IN_4, output_mot_4_up);
       analogWrite(DRIVER_2_IN_3, 0);
     }
     else if (input_mot_4 > set_point_mot_4)
     {
-     Serial.print(" else4-in: ");
-     Serial.print(input_mot_4);
-     Serial.print(" || out: ");
-     Serial.print(output_mot_4_down);
+    //  Serial.print(" else4-in: ");
+    //  Serial.print(input_mot_4);
+    //  Serial.print(" || out: ");
+    //  Serial.print(output_mot_4_down);
       analogWrite(DRIVER_2_IN_4, 0);
       analogWrite(DRIVER_2_IN_3, output_mot_4_down);
     }
@@ -217,19 +241,19 @@ void loop()
   {
     if (input_mot_5 < set_point_mot_5)
     {
-     Serial.print(" if5-in: ");
-     Serial.print(input_mot_5);
-     Serial.print(" || out: ");
-     Serial.println(output_mot_5_left);
+    //  Serial.print(" if5-in: ");
+    //  Serial.print(input_mot_5);
+    //  Serial.print(" || out: ");
+    //  Serial.println(output_mot_5_left);
       analogWrite(DRIVER_3_IN_2, output_mot_5_left);
       analogWrite(DRIVER_3_IN_1, 0);
     }
     else if (input_mot_5 > set_point_mot_5)
     {
-     Serial.print(" else5-in: ");
-     Serial.print(input_mot_5);
-     Serial.print(" || out: ");
-     Serial.println(output_mot_5_right);
+    //  Serial.print(" else5-in: ");
+    //  Serial.print(input_mot_5);
+    //  Serial.print(" || out: ");
+    //  Serial.println(output_mot_5_right);
       analogWrite(DRIVER_3_IN_2, 0);
       analogWrite(DRIVER_3_IN_1, output_mot_5_right);
     }
