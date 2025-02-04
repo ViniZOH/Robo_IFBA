@@ -1,0 +1,183 @@
+def valor_para_angulo(valor):
+    # Certificando-se de que o valor está entre 0 e 1024
+    if 0 <= valor <= 1024:
+        # Calcula o ângulo mapeando o valor de 0-1024 para 0-359
+        angulo = int((valor * 359) / 1024)
+        return angulo
+    else:
+        raise ValueError("O valor deve estar entre 0 e 1024")
+
+# Exemplo de uso
+valor = 512  # Altere o valor conforme necessário
+angulo = valor_para_angulo(valor)
+print(f"O valor {valor} corresponde ao ângulo {angulo} graus.")
+
+
+
+
+
+#############################################################################################################################
+
+
+
+
+import serial
+import time
+
+def angulo_para_valor(angulo, min_angulo, max_angulo):
+    """Converte um ângulo para um valor entre 0 e 1024, respeitando os limites de ângulo."""
+    if min_angulo <= angulo <= max_angulo:
+        valor = int(((angulo - min_angulo) * 1024) / (max_angulo - min_angulo))
+        return valor
+    else:
+        return None  # Retorna None se o ângulo estiver fora do intervalo
+
+def get_motor_setpoints():
+    """Solicita os ângulos de entrada para os 5 motores e os converte para valores entre 0 e 1024."""
+    setpoints = []
+    motor_ranges = {
+        5: (32, 323),
+        4: (124, 227),
+        3: (43, 335),
+        2: (30, 320),
+        1: (32, 323),
+    }
+    
+    for i in range(1, 6):
+        while True:
+            try:
+                angulo = int(input(f"Enter the angle for motor {i} (between 0 and 359 degrees): "))
+                
+                if 0 <= angulo <= 359:
+                    min_angulo, max_angulo = motor_ranges[i]
+                    valor = angulo_para_valor(angulo, min_angulo, max_angulo)
+                    
+                    if valor is not None:
+                        setpoints.append(valor)
+                        break
+                    else:
+                        print(f"Angle out of range for motor {i}. The valid range is {min_angulo}-{max_angulo} degrees.")
+                else:
+                    print("Angle must be between 0 and 359 degrees. Please try again.")
+            except ValueError:
+                print("Invalid input! Please enter an integer.")
+    
+    return setpoints
+
+def send_to_arduino(port, baudrate, setpoints):
+    """Envia os valores dos motores para o Arduino via porta serial."""
+    try:
+        with serial.Serial(port, baudrate, timeout=2) as ser:
+            time.sleep(2)  # Espera o Arduino se inicializar
+            message = ",".join(map(str, setpoints)) + "\0"
+            ser.write(message.encode())
+            print(f"Setpoints sent: {message.strip()}")
+    except serial.SerialException as e:
+        print(f"Error communicating with the serial port: {e}")
+
+def main():
+    print("Welcome to the setpoints sending program for Arduino Mega!")
+    port = input("Enter the COM port for communication (e.g., COM8): ")
+    baudrate = 9600  # Default baud rate
+
+    while True:
+        setpoints = get_motor_setpoints()
+        confirm = input(f"The setpoints are {setpoints}. Do you want to send them? (y/n): ").lower()
+        if confirm == "y":
+            print("Sending info...")
+            send_to_arduino(port, baudrate, setpoints)
+        else:
+            print("Restarting setpoints entry.")
+
+        repeat = input("Do you want to send new setpoints? (y/n): ").lower()
+        if repeat != "y":
+            print("Exiting the program.")
+            break
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+#############################################################################################################################
+
+
+import serial
+import time
+
+def angulo_para_valor(angulo, min_angulo, max_angulo):
+    """Converte um ângulo para um valor entre 0 e 1024, respeitando os limites de ângulo."""
+    if min_angulo <= angulo <= max_angulo:
+        valor = int(((angulo - min_angulo) * 1024) / (max_angulo - min_angulo))
+        return valor
+    else:
+        return None  # Retorna None se o ângulo estiver fora do intervalo
+
+def get_motor_setpoints():
+    """Solicita os ângulos de entrada para os 5 motores e os converte para valores entre 0 e 1024."""
+    setpoints = []
+    motor_ranges = {
+        5: (32, 323),
+        4: (124, 227),
+        3: (43, 335),
+        2: (30, 320),
+        1: (32, 323),
+    }
+    
+    for i in range(1, 6):
+        min_angulo, max_angulo = motor_ranges[i]
+        while True:
+            try:
+                angulo = int(input(f"Enter the angle for motor {i} (between {min_angulo} and {max_angulo} degrees): "))
+                
+                if 0 <= angulo <= 359:
+                    valor = angulo_para_valor(angulo, min_angulo, max_angulo)
+                    
+                    if valor is not None:
+                        setpoints.append(valor)
+                        break
+                    else:
+                        print(f"Angle out of range for motor {i}. The valid range is {min_angulo}-{max_angulo} degrees.")
+                else:
+                    print("Angle must be between 0 and 359 degrees. Please try again.")
+            except ValueError:
+                print("Invalid input! Please enter an integer.")
+    
+    return setpoints
+
+def send_to_arduino(port, baudrate, setpoints):
+    """Envia os valores dos motores para o Arduino via porta serial."""
+    try:
+        with serial.Serial(port, baudrate, timeout=2) as ser:
+            time.sleep(2)  # Espera o Arduino se inicializar
+            message = ",".join(map(str, setpoints)) + "\0"
+            ser.write(message.encode())
+            print(f"Setpoints sent: {message.strip()}")
+    except serial.SerialException as e:
+        print(f"Error communicating with the serial port: {e}")
+
+def main():
+    print("Welcome to the setpoints sending program for Arduino Mega!")
+    port = input("Enter the COM port for communication (e.g., COM8): ")
+    baudrate = 9600  # Default baud rate
+
+    while True:
+        setpoints = get_motor_setpoints()
+        confirm = input(f"The setpoints are {setpoints}. Do you want to send them? (y/n): ").lower()
+        if confirm == "y":
+            print("Sending info...")
+            send_to_arduino(port, baudrate, setpoints)
+        else:
+            print("Restarting setpoints entry.")
+
+        repeat = input("Do you want to send new setpoints? (y/n): ").lower()
+        if repeat != "y":
+            print("Exiting the program.")
+            break
+
+if __name__ == "__main__":
+    main()
