@@ -43,9 +43,9 @@ double input_garra, input_mot_2, input_mot_3, input_mot_4, input_mot_5;
 double output_mot_1_open, output_mot_1_close, output_mot_2_up, output_mot_2_down, output_mot_3_up, output_mot_3_down, output_mot_4_up, output_mot_4_down, output_mot_5_left, output_mot_5_right;
 
 // Criando objetos PID e linkando as variáveis
-double kp_mot_1 = 0, kp_mot_2 = 4, kp_mot_3 = 4, kp_mot_4 = 4, kp_mot_5 = 4;
-double ki_mot_1 = 0, ki_mot_2 = 3, ki_mot_3 = 3, ki_mot_4 = 3, ki_mot_5 = 3;
-double kd_mot_1 = 0, kd_mot_2 = 3, kd_mot_3 = 3, kd_mot_4 = 3, kd_mot_5 = 3;
+double kp_mot_1 = 0, kp_mot_2 = 1.1, kp_mot_3 = 1.4, kp_mot_4 = 2.0, kp_mot_5 = 1.2;
+double ki_mot_1 = 0, ki_mot_2 = 0.3, ki_mot_3 = 0.11, ki_mot_4 = 0.2, ki_mot_5 = 1;
+double kd_mot_1 = 0, kd_mot_2 = 0.9, kd_mot_3 = 1.7, kd_mot_4 = 1.1, kd_mot_5 = 0.0;
 
 
 
@@ -107,8 +107,8 @@ void setup()
   // Definir o setpoint inicial
   set_point_mot_1 = 512; // Defina o valor desejado
   set_point_mot_2 = 512; // Defina o valor desejado
-  set_point_mot_3 = 512; // Defina o valor desejado
-  set_point_mot_4 = 400; // Defina o valor desejado
+  set_point_mot_3 = 250; // Defina o valor desejado
+  set_point_mot_4 = 520; // Defina o valor desejado
   set_point_mot_5 = 512; // Defina o valor desejado
 }
 
@@ -129,11 +129,11 @@ void loop()
     motorValues[index] = input.toInt(); // Pega o último valor
 
     // Atribui os setpoints para cada motor de acordo com a ordem solicitada
-    set_point_mot_5 = motorValues[0];
-    set_point_mot_4 = motorValues[1];
+    set_point_mot_5 = motorValues[4];
+    set_point_mot_4 = motorValues[3];
     set_point_mot_3 = motorValues[2];
-    set_point_mot_2 = motorValues[3];
-    set_point_mot_1 = motorValues[4];
+    set_point_mot_2 = motorValues[1];
+    set_point_mot_1 = motorValues[0];
 
     Serial.println("Info received");
   }
@@ -267,3 +267,7 @@ void loop()
 
   delay(10); // Para facilitar a leitura do serial
 }
+
+// 512,512,250,520,512\0
+// 512,390,650,400,512\0
+// 512,640,250,400,268\0
