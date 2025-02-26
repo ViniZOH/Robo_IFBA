@@ -7,16 +7,17 @@ Alunos: Jorge Palma
 
 #include <PID_v1.h>
 
-#define DRIVER_1_IN_1  2      // Motor 1 
-#define DRIVER_1_IN_2  3      // Motor 1
-#define DRIVER_1_IN_3  4      // Motor 2
-#define DRIVER_1_IN_4  5      // Motor 2
-#define DRIVER_2_IN_1  6      // Motor 3
-#define DRIVER_2_IN_2  7      // Motor 3
-#define DRIVER_2_IN_3  8      // Motor 4
-#define DRIVER_2_IN_4  9      // Motor 4
-#define DRIVER_3_IN_1  10     // Motor 5
-#define DRIVER_3_IN_2  11     // Motor 5
+#define DRIVER_1_IN_1  10      // Motor 1 
+#define DRIVER_1_IN_2  11      // Motor 1
+
+#define DRIVER_1_IN_3  2      // Motor 2
+#define DRIVER_1_IN_4  3      // Motor 2
+#define DRIVER_2_IN_1  4      // Motor 3
+#define DRIVER_2_IN_2  5      // Motor 3
+#define DRIVER_2_IN_3  6      // Motor 4
+#define DRIVER_2_IN_4  7      // Motor 4
+#define DRIVER_3_IN_1  8     // Motor 5
+#define DRIVER_3_IN_2  9     // Motor 5
 #define DRIVER_3_IN_3  44     // RESERVA
 #define DRIVER_3_IN_4  46     // RESERVA
 
@@ -43,10 +44,13 @@ double input_garra, input_mot_2, input_mot_3, input_mot_4, input_mot_5;
 double output_mot_1_open, output_mot_1_close, output_mot_2_up, output_mot_2_down, output_mot_3_up, output_mot_3_down, output_mot_4_up, output_mot_4_down, output_mot_5_left, output_mot_5_right;
 
 // Criando objetos PID e linkando as variáveis
-double kp_mot_1 = 0, kp_mot_2 = 1.1, kp_mot_3 = 1.4, kp_mot_4 = 2.0, kp_mot_5 = 1.2;
-double ki_mot_1 = 0, ki_mot_2 = 0.3, ki_mot_3 = 0.11, ki_mot_4 = 0.2, ki_mot_5 = 1;
-double kd_mot_1 = 0, kd_mot_2 = 0.9, kd_mot_3 = 1.7, kd_mot_4 = 1.1, kd_mot_5 = 0.0;
+//double kp_mot_1 = 0, kp_mot_2 = 1.1, kp_mot_3 = 1.4, kp_mot_4 = 2.0, kp_mot_5 = 1.2;
+//double ki_mot_1 = 0, ki_mot_2 = 0.3, ki_mot_3 = 0.11, ki_mot_4 = 0.2, ki_mot_5 = 1;
+//double kd_mot_1 = 0, kd_mot_2 = 0.9, kd_mot_3 = 1.7, kd_mot_4 = 1.1, kd_mot_5 = 0.0;
 
+double kp_mot_1 = 0, kp_mot_2 = 1.1, kp_mot_3 = 0.5, kp_mot_4 = 2.0, kp_mot_5 = 1.2;
+double ki_mot_1 = 0, ki_mot_2 = 0.0, ki_mot_3 = 0.3, ki_mot_4 = 0.0, ki_mot_5 = 0.0;
+double kd_mot_1 = 0, kd_mot_2 = 0.0, kd_mot_3 = 0.0, kd_mot_4 = 0.0, kd_mot_5 = 0.0;
 
 
 PID PID_Mot_1_open(&input_garra, &output_mot_1_open, &set_point_mot_1, kp_mot_1, ki_mot_1, kd_mot_1, DIRECT);
@@ -107,7 +111,7 @@ void setup()
   // Definir o setpoint inicial
   set_point_mot_1 = 512; // Defina o valor desejado
   set_point_mot_2 = 512; // Defina o valor desejado
-  set_point_mot_3 = 250; // Defina o valor desejado
+  set_point_mot_3 = 512; // Defina o valor desejado
   set_point_mot_4 = 520; // Defina o valor desejado
   set_point_mot_5 = 512; // Defina o valor desejado
 }
@@ -115,7 +119,7 @@ void setup()
 void loop()
 {
   if (Serial.available() > 0) {
-    String input = Serial.readStringUntil('\0'); // Lê a string até o delimitador \0
+    String input = Serial.readStringUntil('\n'); // Lê a string até o delimitador \0
     input.trim(); // Remove espaços extras
 
     // Divida a string com base na vírgula e atribua aos setpoints
@@ -135,7 +139,16 @@ void loop()
     set_point_mot_2 = motorValues[1];
     set_point_mot_1 = motorValues[0];
 
-    Serial.println("Info received");
+    Serial.print("Info received ");
+    Serial.print(set_point_mot_5);
+    Serial.print(" ");
+    Serial.print(set_point_mot_4);
+    Serial.print(" ");
+    Serial.print(set_point_mot_3);
+    Serial.print(" ");
+    Serial.print(set_point_mot_2);
+    Serial.print(" ");
+    Serial.println(set_point_mot_1);
   }
 
   input_mot_2 = analogRead(POT_1_MOT_2);
@@ -263,7 +276,6 @@ void loop()
     digitalWrite(DRIVER_3_IN_2, LOW);
     digitalWrite(DRIVER_3_IN_1, LOW);
   }
-
 
   delay(10); // Para facilitar a leitura do serial
 }
